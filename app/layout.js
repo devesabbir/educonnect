@@ -1,5 +1,5 @@
 import { Poppins } from "next/font/google";
-import "../globals.css";
+import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import connectDB from "@/services/connectDB";
 
@@ -20,8 +20,7 @@ export default async function RootLayout({ children }) {
     <html lang="en">
       <body className={poppins.className}>
         {children}
-
-        <Toaster />
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );
