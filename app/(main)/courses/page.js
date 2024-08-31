@@ -18,6 +18,7 @@ import { getCoursesList } from "@/queries/course-query";
 const CoursesPage = async () => {
   const courses = await getCoursesList();
 
+
   return (
     <section
       id="courses"
@@ -51,7 +52,7 @@ const CoursesPage = async () => {
           {/* Course grid */}
           <div className="lg:col-span-3 grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
             {courses.map((course) => {
-              return <CourseCard key={course.id} course={course} />;
+              return <CourseCard key={course._id} course={course} />;
             })}
           </div>
         </div>

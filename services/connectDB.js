@@ -11,7 +11,6 @@ if (!DATABASE_URL) {
 let cached = global.mongoose;
 
 if (!cached) {
-  console.log("Database connection established!");
   cached = global.mongoose = { conn: null, promise: null };
 }
 

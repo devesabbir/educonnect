@@ -1,50 +1,22 @@
-import { NextResponse } from "next/server";
-import { match } from "@formatjs/intl-localematcher";
-import Negotiator from "negotiator";
-import { cookies } from "next/headers";
+import NextAuth from "next-auth";
+import { authConfig } from "./authConfig";
+import { LOGIN, PUBLIC_ROUTES, ROOT } from "./lib/routes";
 
-// let defaultLocale = "en";
-// let locales = ["en", "bn"];
+const { auth } = NextAuth(authConfig);
 
-// // Get the preferred locale, similar to the above or using a library
-// function getLocale(request) {
-//   const acceptedLanguage = request.headers.get("accept-language") ?? undefined;
-//   const headers = { "accept-language": acceptedLanguage };
-//   const languages = new Negotiator({ headers }).languages();
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isAuthenticated = !!req.auth;
 
-//   return match(languages, locales, defaultLocale); // en or bn
-// }
-// export function middleware(request) {
-//   // get the pathname from request url
-//   const pathname = request.nextUrl.pathname;
-//   const cookieStore = cookies();
-//   const lang = cookieStore.get("lang");
+  const isPublicRoute =
+    PUBLIC_ROUTES.find((route) => nextUrl.pathname.startsWith(route)) ||
+    nextUrl.pathname === ROOT;
 
-//   // Internationalization
-//   if (pathname.startsWith("/api/") || pathname.startsWith("/api")) {
-//     return NextResponse.next();
-//   }
+  if (!isAuthenticated && !isPublicRoute) {
+    return Response.redirect(new URL(LOGIN, nextUrl));
+  }
+});
 
-//   const pathNameIsMissingLocale = locales.every(
-//     (locale) =>
-//       !pathname.startsWith(`/${locale}`) && !pathname.startsWith(`/${locale}/`)
-//   );
-
-//   if (pathNameIsMissingLocale) {
-//     // detect user's preference & redirect with a locale with a path eg: /en/about
-//     const locale = lang?.value ? lang?.value : getLocale(request);
-
-//     return NextResponse.redirect(
-//       new URL(`/${locale}/${pathname}`, request.url)
-//     );
-//   }
-
-//   return NextResponse.next();
-// }
-
-// export const config = {
-//   matcher: ["/((?!_next).*)"],
-// };
-export function middleware() {
-  return NextResponse.next();
-}
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};

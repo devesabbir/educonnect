@@ -8,10 +8,14 @@ import Link from "next/link";
 import CourseCard from "./courses/_components/CourseCard";
 import { getCoursesList } from "@/queries/course-query";
 import { getCategories } from "@/queries/categories";
+import { auth } from "@/auth";
 
 const HomePage = async () => {
+  const session = await auth();
   const courses = await getCoursesList();
   const categories = await getCategories();
+
+  console.log(session);
 
   return (
     <>
@@ -79,8 +83,8 @@ const HomePage = async () => {
           {categories.map((category) => {
             return (
               <Link
-                href={`/categories/${category.id}`}
                 key={category.id}
+                href={`/categories/${category.id}`}
                 className="relative overflow-hidden rounded-lg border bg-background p-2 hover:scale-105 transition-all duration-500 ease-in-out"
               >
                 <div className="flex  flex-col gap-4 items-center justify-between rounded-md p-6">
@@ -111,7 +115,7 @@ const HomePage = async () => {
         </div>
         <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
           {courses.map((course) => {
-            return <CourseCard key={course.id} course={course} />;
+            return <CourseCard key={course._id} course={course} />;
           })}
         </div>
       </section>
