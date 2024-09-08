@@ -78,45 +78,38 @@ export async function getCourseDetails(id) {
 }
 
 export async function getCourseDetailsByInstructor(instructorId) {
-  try {
-    await connectDB();
-    const courses = await CourseModel.find({ instructor: instructorId }).lean();
+  const courses = await CourseModel.find({ instructor: instructorId }).lean();
 
-    const enrollments = await Promise.all(
-      courses.map(async (course) => {
-        const enrollment = await getEnrollmentsForCourse(course._id.toString());
-        return enrollment;
-      })
-    );
+  const enrollments = await Promise.all(
+    courses.map(async (course) => {
+      const enrollment = await getEnrollmentsForCourse(course._id.toString());
+      return enrollment;
+    })
+  );
 
-    const totalEnrollments = enrollments.reduce((item, currentValue) => {
-      return item.length + currentValue.length;
-    });
+  const totalEnrollments = enrollments.reduce(function (acc, obj) {
+    return acc + obj.length;
+  }, 0);
 
-    const testimonials = await Promise.all(
-      courses.map(async (course) => {
-        const testimonial = await getTestimonialsForCourse(
-          course._id.toString()
-        );
-        return testimonial;
-      })
-    );
+  const testimonials = await Promise.all(
+    courses.map(async (course) => {
+      const testimonial = await getTestimonialsForCourse(course._id.toString());
+      return testimonial;
+    })
+  );
 
-    const totalTestimonials = testimonials.flat();
-    const avgRating =
-      totalTestimonials.reduce(function (acc, obj) {
-        return acc + obj.rating;
-      }, 0) / totalTestimonials.length;
+  const totalTestimonials = testimonials.flat();
+  const avgRating =
+    totalTestimonials.reduce(function (acc, obj) {
+      return acc + obj.rating;
+    }, 0) / totalTestimonials.length;
 
-    //console.log("testimonials", totalTestimonials, avgRating);
+  //console.log("testimonials", totalTestimonials, avgRating);
 
-    return {
-      courses: courses.length,
-      enrollments: totalEnrollments,
-      reviews: totalTestimonials.length,
-      ratings: avgRating.toPrecision(2),
-    };
-  } catch (error) {
-    throw error;
-  }
+  return {
+    courses: courses.length,
+    enrollments: totalEnrollments,
+    reviews: totalTestimonials.length,
+    ratings: avgRating.toPrecision(2),
+  };
 }
