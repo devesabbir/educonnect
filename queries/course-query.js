@@ -1,80 +1,72 @@
-import { replaceMongoIdInObject } from "@/lib/convertData";
-import { CategoryModel } from "@/models/category-model";
+import {
+  replaceMongoIdInArray,
+  replaceMongoIdInObject,
+} from "@/lib/convertData";
 import { CourseModel } from "@/models/course-model";
-import { ModuleModel } from "@/models/module-model";
-
-import { UserModel } from "@/models/user-model";
-import connectDB from "@/services/connectDB";
 import { getEnrollmentsForCourse } from "./enrollments";
 import { getTestimonialsForCourse } from "./testimonials";
-import { Testimonial as TestimonialModel } from "@/models/testimonial-model";
+import { CategoryModel } from "@/models/category-model";
+import { UserModel } from "@/models/user-model";
+import { Testimonial } from "@/models/testimonial-model";
+import { ModuleModel } from "@/models/module-model";
+import { connectDB } from "@/services/connectDB";
 
-export async function getCoursesList() {
-  try {
-    await connectDB();
-    const courses = await CourseModel.find({})
-      .select([
-        "title",
-        "subtitle",
-        "thumbnail",
-        "modules",
-        "price",
-        "category",
-        "instructor",
-      ])
-      .populate({
-        path: "modules",
-        model: ModuleModel,
-      })
-      .populate({
-        path: "category",
-        model: CategoryModel,
-      })
-      .populate({
-        path: "instructor",
-        model: UserModel,
-      })
-      .populate({
-        path: "testimonials",
-        model: TestimonialModel,
-      })
-      .lean();
-    return courses;
-  } catch (error) {
-    throw error;
-  }
+export async function getCourseList() {
+  const courses = await CourseModel.find()
+    .select([
+      "title",
+      "subtitle",
+      "thumbnail",
+      "modules",
+      "price",
+      "category",
+      "instructor",
+    ])
+    .populate({
+      path: "category",
+      model: CategoryModel,
+    })
+    .populate({
+      path: "instructor",
+      model: UserModel,
+    })
+    .populate({
+      path: "testimonials",
+      model: Testimonial,
+    })
+    .populate({
+      path: "modules",
+      model: ModuleModel,
+    })
+    .lean();
+  return replaceMongoIdInArray(courses);
 }
 
 export async function getCourseDetails(id) {
-  try {
-    await connectDB();
-    const course = await CourseModel.findById(id)
-      .populate({
-        path: "category",
-        model: CategoryModel,
-      })
-      .populate({
-        path: "instructor",
+  const course = await CourseModel.findById(id)
+    .populate({
+      path: "category",
+      model: CategoryModel,
+    })
+    .populate({
+      path: "instructor",
+      model: UserModel,
+    })
+    .populate({
+      path: "testimonials",
+      model: Testimonial,
+      populate: {
+        path: "user",
         model: UserModel,
-      })
-      .populate({
-        path: "testimonials",
-        model: TestimonialModel,
-        populate: {
-          path: "user",
-          model: UserModel,
-        },
-      })
-      .populate({
-        path: "modules",
-        model: ModuleModel,
-      })
-      .lean();
+      },
+    })
+    .populate({
+      path: "modules",
+      model: ModuleModel,
+    })
+    .lean();
 
-    return replaceMongoIdInObject(course);
-  } catch (error) {
-    throw error;
-  }
+  return replaceMongoIdInObject(course);
 }
 
 export async function getCourseDetailsByInstructor(instructorId) {

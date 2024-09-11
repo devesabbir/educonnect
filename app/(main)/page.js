@@ -6,13 +6,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 import CourseCard from "./courses/_components/CourseCard";
-import { getCoursesList } from "@/queries/course-query";
-import { getCategories } from "@/queries/categories";
+
 import { auth } from "@/auth";
+import { getCourseList } from "@/queries/course-query";
+import { getCategories } from "@/queries/categories";
 
 const HomePage = async () => {
   const session = await auth();
-  const courses = await getCoursesList();
+  const courses = await getCourseList();
   const categories = await getCategories();
 
   return (

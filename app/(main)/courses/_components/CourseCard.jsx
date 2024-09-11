@@ -8,6 +8,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { EnrollCourse } from "@/components/enroll-course";
 
 const CourseCard = ({ course }) => {
+  console.log(course);
   return (
     <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
       <Link key={course.id} href={`/courses/${course.id}`}>

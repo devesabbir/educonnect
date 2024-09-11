@@ -1,16 +1,14 @@
+import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { sendEmails } from "@/lib/email";
+import { stripe } from "@/lib/stripe";
+import { getCourseDetails } from "@/queries/course-query";
+import { enrollForCourse } from "@/queries/enrollments";
+import { getUserByEmail } from "@/queries/users";
 import { CircleCheck } from "lucide-react";
 import Link from "next/link";
 
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { stripe } from "@/lib/stripe";
-import { getCourseDetails } from "@/queries/courses";
-import { getUserByEmail } from "@/queries/users";
-
-import { sendEmails } from "@/lib/emails";
-
-import { enrollForCourse } from "@/queries/enrollments";
 
 const Success = async ({ searchParams: { session_id, courseId } }) => {
   if (!session_id)
@@ -24,7 +22,7 @@ const Success = async ({ searchParams: { session_id, courseId } }) => {
 
   const course = await getCourseDetails(courseId);
   const loggedInUser = await getUserByEmail(userSession?.user?.email);
-
+  console.log("login user:" + JSON.stringify(loggedInUser));
   const checkoutSession = await stripe.checkout.sessions.retrieve(session_id, {
     expand: ["line_items", "payment_intent"],
   });
@@ -72,7 +70,7 @@ const Success = async ({ searchParams: { session_id, courseId } }) => {
     ];
 
     const emailSentResponse = await sendEmails(emailsToSend);
-    console.log(emailSentResponse);
+    // console.log(JSON.stringify(emailSentResponse));
   }
 
   return (

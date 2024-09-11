@@ -13,11 +13,10 @@ import ActiveFilters from "./_components/ActiveFilters";
 import FilterCourse from "./_components/FilterCourse";
 
 import CourseCard from "./_components/CourseCard";
-import { getCoursesList } from "@/queries/course-query";
+import { getCourseList } from "@/queries/course-query";
 
 const CoursesPage = async () => {
-  const courses = await getCoursesList();
-
+  const courses = await getCourseList();
 
   return (
     <section
